@@ -1,0 +1,46 @@
+.container {
+    width: 400px;
+    height: 600px;
+    font-size: 2.5vh;
+    font-weight: 600;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.key {
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    border: 2px solid grey;
+    cursor: pointer;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: "Segoe UI", sans-serif;
+}
+
+.number-key {
+    background-color: grey;
+}
+
+.operator-key {
+    background-color:orange;
+}
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+}
+
+.keyboard-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.view-field {
+    height: 50px;
+    text-align: right;
+    border: 5px solid darkslategray;
+}
