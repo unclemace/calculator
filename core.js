@@ -16,11 +16,6 @@ const keys = {
     'dot': { type: 'operator'},
     'plus-minus': { type: 'operator'},
     'division':{type:'operator'},
-    'sqrt':{type:'operator'},
-    'tg':{type:'operator'},
-    'round':{type:'operator'},
-    'sh':{type:'operator'},
-    'ctg':{type:'operator'},
     'clear':{type:'operator'}
 }
 
@@ -54,7 +49,7 @@ keyboard.addEventListener('click', (e) => {
     processClick(keyConfig, id);
     if (state.visibleNumber !== 0) {
         setResult(state.visibleNumber);
-    }6
+    }
 });
 
 function setResult(value) {
@@ -66,11 +61,19 @@ function processClick(keyConfig, id) {
         return processNumberClick(keyConfig.value);
     }
 
-    if(keyConfig.type === 'operator' && id === 'equal' || state.lastOperation!==null) {
-        return calculateResult();
-    }
 
-    if(keyConfig.type === 'operator') {
+    if (keyConfig.type === 'operator'){
+        
+        if(keyConfig.type === 'operator' && id === 'equal')
+        {
+            return calculateResult();
+        }
+
+        if(keyConfig.type === 'operator' && id ==='clear')
+        {
+            return clearLastValue();
+        }
+
         return processOperationClick(id);
     }
 }
@@ -80,6 +83,7 @@ function processNumberClick(value) {
 }
 
 function calculateResult() {
+    console.log(state);
     switch (state.lastOperation) {
         case 'plus':
             setValue(state.currentValue + state.visibleNumber);
@@ -92,9 +96,6 @@ function calculateResult() {
             break;
         case 'division':
             setValue(state.currentValue / state.visibleNumber);
-            break;
-        case 'clear':
-            setResult(0);
             break;
         default:
             break;
@@ -112,4 +113,13 @@ function processOperationClick(value) {
 function changeVisibleValue(value) {
     const visibleNumber = state.visibleNumber.toString() + value.toString();
     setVisibleNumber(parseFloat(visibleNumber, 10));
+}
+
+function clearLastValue(){
+    console.log(state);
+    if (state.visibleNumber > 9) {
+        const visibleNumber = state.visibleNumber.toString().slice(0,-1);
+        setVisibleNumber(parseFloat(visibleNumber,10));
+    }
+
 }
