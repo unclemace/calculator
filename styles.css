@@ -1,7 +1,6 @@
 .container {
     width: 400px;
     height: 600px;
-    font-size: 2.5vh;
     font-weight: 600;
     margin-left: auto;
     margin-right: auto;
@@ -13,7 +12,7 @@
     text-align: center;
     border: 1px solid #5a5a5a;
     cursor: pointer;
-    
+    font-size: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -46,4 +45,8 @@
     border: 1px solid grey;
     font-size: 50px;
     color:#dedede
+}
+
+.double-key {
+ width: 200px;   
 }
