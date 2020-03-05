@@ -9,13 +9,13 @@ const keys = {
     'seven': { type: 'number',  value: 7},
     'eight': { type: 'number',  value: 8},
     'nine': { type: 'number',  value: 9},
-    'minus': { type: 'operator'},
-    'plus': { type: 'operator'},
-    'multiply': { type: 'operator'},
-    'equal': { type: 'operator'},
-    'dot': { type: 'operator'},
-    'plus-minus': { type: 'operator'},
-    'division':{type:'operator'},
+    'minus': { type: 'operator',value:'-'},
+    'plus': { type: 'operator',value:'+'},
+    'multiply': { type: 'operator',value:'*'},
+    'equal': { type: 'operator',value:'='},
+    'dot': { type: 'operator',value:'.'},
+    'plus-minus': { type: 'operator',value:'+-'},
+    'division':{type:'operator',value:'/'},
     'clear':{type:'operator'}
 }
 
@@ -47,8 +47,11 @@ keyboard.addEventListener('click', (e) => {
     const id = e.target.id;
     const keyConfig = keys[id];
     processClick(keyConfig, id);
-    if (state.visibleNumber !== 0) {
+    console.log(state);
+    if (state.lastOperation === '') {
         setResult(state.visibleNumber);
+    }else {
+        setResult(state.currentValue.toString()+keys[state.lastOperation].value+ state.visibleNumber);
     }
 });
 
@@ -57,33 +60,31 @@ function setResult(value) {
 }
 
 function processClick(keyConfig, id) {
-    if(keyConfig.type === 'number') {
+    if(keyConfig.type === 'number' ) {
+        
         return processNumberClick(keyConfig.value);
     }
-
-
     if (keyConfig.type === 'operator'){
         
-        if(keyConfig.type === 'operator' && id === 'equal')
+        if(id === 'equal' || state.lastOperation !== '')
         {
             return calculateResult();
         }
 
-        if(keyConfig.type === 'operator' && id ==='clear')
+        if(id ==='clear')
         {
             return clearLastValue();
         }
-
         return processOperationClick(id);
     }
 }
+
 
 function processNumberClick(value) {
     changeVisibleValue(value)
 }
 
 function calculateResult() {
-    console.log(state);
     switch (state.lastOperation) {
         case 'plus':
             setValue(state.currentValue + state.visibleNumber);
@@ -107,7 +108,8 @@ function calculateResult() {
 function processOperationClick(value) {
     setOperation(value);
     setValue(state.visibleNumber);
-    setVisibleNumber(0);
+    setVisibleNumber('');
+
 }
 
 function changeVisibleValue(value) {
@@ -116,10 +118,15 @@ function changeVisibleValue(value) {
 }
 
 function clearLastValue(){
-    console.log(state);
-    if (state.visibleNumber > 9) {
+    if (Math.abs(state.visibleNumber) > 9) {
         const visibleNumber = state.visibleNumber.toString().slice(0,-1);
+        setValue(parseFloat(visibleNumber,10))
         setVisibleNumber(parseFloat(visibleNumber,10));
     }
-
+    else {
+            setValue(0);
+            setVisibleNumber(0);
+    }
+    
 }
+   
