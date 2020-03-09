@@ -6,25 +6,16 @@ let keys = keysBasic;
 const operators = Object.keys(keys).filter(key => keys[key].type === 'operator');
 
 const state = {
-    // currentValue: 0,
     lastOperation: '',
-    // visibleNumber: '',
     memory:0,
     expression:'',
     lastType:''
 };
 
-// function setValue(value) {
-//     state.currentValue = value;
-// }
 
 function setOperation(operation) {
     state.lastOperation = operation;
 }
-
-// function setVisibleNumber(value) {
-//     state.visibleNumber = value;
-// }
 
 function setExpression(value){
     state.expression = value;
@@ -79,11 +70,6 @@ function addListenersToButtons() {
         const keyConfig = keys[id];
         console.log(state);
         processClick(keyConfig, id);
-        // if(state.lastOperation!== 'equal'){
-        //     setResult(state.expression)
-        // }else {
-        //     setResult(state.visibleNumber);
-        // }
         setResult(state.expression);
     });
 }
@@ -124,21 +110,13 @@ function processClick(keyConfig, id) {
 function processNumberClick(value) {
     setLastType('number');
     changeExpression(value);
-    // changeVisibleValue(value);
 }
 
 function processOperationClick(value) {
     setLastType('operator');
     setOperation(value);
-    // setValue(state.visibleNumber);
     changeExpression(keys[value].value);
-    // setVisibleNumber('');
 }
-
-// function changeVisibleValue(value) {
-//     const visibleNumber = state.visibleNumber.toString() + value.toString();
-//     setVisibleNumber(parseFloat(visibleNumber, 10));
-// }
 
 function changeExpression(value) {
     const expresion = state.expression.toString()+value.toString();
@@ -146,15 +124,6 @@ function changeExpression(value) {
 }
 
 function clearLastValue(){
-    // if (Math.abs(state.visibleNumber) > 9) {
-    //     const visibleNumber = state.visibleNumber.toString().slice(0,-1);
-    //     setValue(parseFloat(visibleNumber,10))
-    //     setVisibleNumber(parseFloat(visibleNumber,10));
-    // }
-    // else {
-    //         setValue(0);
-    //         setVisibleNumber(0);
-    // }
     let newExpression = state.expression.slice(0,-1);
     setExpression(newExpression);
     
@@ -181,7 +150,6 @@ function getPriority(value) {
 function calculate(input){
     const output = getExpression(input);
     const result = counting(output);
-    // setVisibleNumber(result);
     state.expression = result;
     console.log(state);
     setOperation('equal');
@@ -195,7 +163,6 @@ function getExpression(input)
     { 
         if (!isNaN(parseInt(input[i])))
         {
-            console.log('ok')
              while (!isOperator(input[i]))
              {
                  console.log(typeof(input[i]));
