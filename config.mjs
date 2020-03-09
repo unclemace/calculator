@@ -125,5 +125,6 @@ export const keysProgrammer = {
     'zero': { type: 'number', value: 0,rowId:0,position:2},
     'oo': { type: 'number', value:'00' ,rowId:0,position:3},
     'equal': { type: 'operator', value: '=',rowId:0,position:4,doubleKey:true, basicOperation:true},
+
     
 }

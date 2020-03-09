@@ -6,31 +6,36 @@ let keys = keysBasic;
 const operators = Object.keys(keys).filter(key => keys[key].type === 'operator');
 
 const state = {
-    currentValue: 0,
+    // currentValue: 0,
     lastOperation: '',
-    visibleNumber: '',
+    // visibleNumber: '',
     memory:0,
-    expression:''
+    expression:'',
+    lastType:''
 };
 
-
-
-
-
-function setValue(value) {
-    state.currentValue = value;
-}
+// function setValue(value) {
+//     state.currentValue = value;
+// }
 
 function setOperation(operation) {
     state.lastOperation = operation;
 }
 
-function setVisibleNumber(value) {
-    state.visibleNumber = value;
+// function setVisibleNumber(value) {
+//     state.visibleNumber = value;
+// }
+
+function setExpression(value){
+    state.expression = value;
 }
 
-function changeExpression(value){
-    state.expression+=value;
+function setLastType(value){
+    state.lastType = value;
+}
+
+function setResult(value) {
+    viewField.innerHTML = value;
 }
 
 render(keys);
@@ -74,16 +79,12 @@ function addListenersToButtons() {
         const keyConfig = keys[id];
         console.log(state);
         processClick(keyConfig, id);
-        // if (state.lastOperation === '') {
-        //      setResult(state.visibleNumber);
-        //  }else {
-        //      setResult(state.currentValue);
+        // if(state.lastOperation!== 'equal'){
+        //     setResult(state.expression)
+        // }else {
+        //     setResult(state.visibleNumber);
         // }
-        if( state.lastOperation!== 'equal'){
-            setResult(state.expression)
-        }else {
-            setResult(state.visibleNumber);
-        }
+        setResult(state.expression);
     });
 }
 
@@ -92,80 +93,70 @@ function removeKeyboard() {
     keyboard.removeChild(keyboard.firstChild);
 }
 
-function setResult(value) {
-    viewField.innerHTML = value;
-}
-
 function processClick(keyConfig, id) {
     if(keyConfig.type === 'number' ) {
-        
         return processNumberClick(keyConfig.value);
     }
     if (keyConfig.type === 'operator'){
-        
-        if(id === 'equal')
+        if(state.lastType!=='operator')
         {
-            return calculate(state.expression);
+            console.log(state.expression[0]);
+            if(id === 'equal' && state.lastOperation !=='equal')
+            {
+                if(isOperator(state.expression[0])){
+                    setExpression('0'+state.expression);
+                    return calculate(state.expression);
+                }
+                return calculate(state.expression);
+            }
+    
+            if(id ==='clear')
+            {
+                return clearLastValue();
+            }
+            return processOperationClick(id);
         }
-
-        if(id ==='clear')
-        {
-            return clearLastValue();
         }
-        return processOperationClick(id);
-    }
+       
 }
 
 
 function processNumberClick(value) {
-    changeExpression(value.toString());
-    changeVisibleValue(value)
-}
-
-function calculateResult() {
-    switch (state.lastOperation) {
-        case 'plus':
-            setValue(state.currentValue + state.visibleNumber);
-            break;
-        case 'minus':
-            setValue(state.currentValue - state.visibleNumber);
-            break;
-        case 'multiply':
-            setValue(state.currentValue * state.visibleNumber);
-            break;
-        case 'division':
-            setValue(state.currentValue / state.visibleNumber);
-            break;
-        default:
-            break;
-    };
-    setOperation('');
-    setVisibleNumber(state.currentValue);
+    setLastType('number');
+    changeExpression(value);
+    // changeVisibleValue(value);
 }
 
 function processOperationClick(value) {
+    setLastType('operator');
     setOperation(value);
-    setValue(state.visibleNumber);
-    changeExpression(keys[value].value.toString());
+    // setValue(state.visibleNumber);
+    changeExpression(keys[value].value);
     // setVisibleNumber('');
-
 }
 
-function changeVisibleValue(value) {
-    const visibleNumber = state.visibleNumber.toString() + value.toString();
-    setVisibleNumber(parseFloat(visibleNumber, 10));
+// function changeVisibleValue(value) {
+//     const visibleNumber = state.visibleNumber.toString() + value.toString();
+//     setVisibleNumber(parseFloat(visibleNumber, 10));
+// }
+
+function changeExpression(value) {
+    const expresion = state.expression.toString()+value.toString();
+    setExpression(expresion);
 }
 
 function clearLastValue(){
-    if (Math.abs(state.visibleNumber) > 9) {
-        const visibleNumber = state.visibleNumber.toString().slice(0,-1);
-        setValue(parseFloat(visibleNumber,10))
-        setVisibleNumber(parseFloat(visibleNumber,10));
-    }
-    else {
-            setValue(0);
-            setVisibleNumber(0);
-    }
+    // if (Math.abs(state.visibleNumber) > 9) {
+    //     const visibleNumber = state.visibleNumber.toString().slice(0,-1);
+    //     setValue(parseFloat(visibleNumber,10))
+    //     setVisibleNumber(parseFloat(visibleNumber,10));
+    // }
+    // else {
+    //         setValue(0);
+    //         setVisibleNumber(0);
+    // }
+    let newExpression = state.expression.slice(0,-1);
+    setExpression(newExpression);
     
 }
 
@@ -190,14 +181,13 @@ function getPriority(value) {
 function calculate(input){
     const output = getExpression(input);
     const result = counting(output);
-    setVisibleNumber(result);
+    // setVisibleNumber(result);
     state.expression = result;
     console.log(state);
     setOperation('equal');
 }
 
-
-export function getExpression(input)
+function getExpression(input)
 {
    let output = '';
    let operators = [];
@@ -210,7 +200,7 @@ export function getExpression(input)
              {
                  console.log(typeof(input[i]));
                  output+=input[i];
-                 i++; 
+                i++;
                  if (i == input.length){
                      break;
                  } 
@@ -290,4 +280,10 @@ function counting(input)
         }
     }
     return temp.pop(); 
+}
+
+function validForEqual(expresion){
+    if(isOperator(expresion[0])){
+        state.expression.replace(expresion[0],'0 '+ expresion[0])
+    }
 }

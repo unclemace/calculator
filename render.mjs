@@ -12,7 +12,6 @@ function drawButton(row, config,key) {
     button.classList.add(`${config.type}-key`);
     button.id = key;
     button.innerHTML = config.value;
-    console.log(config.value);
     if(config.doubleKey){
         button.classList.add('double-key');
     }
