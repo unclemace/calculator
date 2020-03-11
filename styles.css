@@ -6,6 +6,7 @@
     border: 2px solid;
     border-radius: 5px;
     padding: 1px;
+    overflow: hidden;
 }
 
 .key {
@@ -47,6 +48,7 @@
 }
 
 .view-field {
+    overflow: hidden;
     background-color: #242424;
     height: 150px;
     text-align: right;

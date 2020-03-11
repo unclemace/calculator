@@ -81,8 +81,8 @@ export const keysEngineer = {
 }
 
 export const keysProgrammer = {
-    'and':{type:'operator',value:'AND',rowId:5,position:0},
-    'or':{type:'operator',value:'OR',rowId:5,position:1},
+    'and':{type:'operator',value:'&&',rowId:5,position:0},
+    'or':{type:'operator',value:'||',rowId:5,position:1},
     'd':{type:'number',value:'D',rowId:5,position:2},
     'e':{type:'number',value:'E',rowId:5,position:3},
     'f':{type:'number',value:'F',rowId:5,position:4},
@@ -105,8 +105,8 @@ export const keysProgrammer = {
     '2s':{type:'operator',value:"2's",rowId:3,position:5},
     '1s':{type:'operator',value:"1's",rowId:3,position:6},
 
-    'xLSHiftY':{type:'operator',value:'X< <Y',rowId:2,position:0},
-    'xRShifhtY':{type:'operator',value:'X>>Y',rowId:2,position:1},
+    'xLShiftY':{type:'operator',value:'X< <Y',rowId:2,position:0},
+    'xRShifttY':{type:'operator',value:'X>>Y',rowId:2,position:1},
     'four': { type: 'number',  value: 4,rowId:2,position:2},
     'five': { type: 'number',  value: 5,rowId:2,position:3},
     'six': { type: 'number',  value: 6,rowId:2,position:4},
@@ -124,7 +124,5 @@ export const keysProgrammer = {
     'ff': { type: 'number', value: 'FF',rowId:0,position:1},
     'zero': { type: 'number', value: 0,rowId:0,position:2},
     'oo': { type: 'number', value:'00' ,rowId:0,position:3},
-    'equal': { type: 'operator', value: '=',rowId:0,position:4,doubleKey:true, basicOperation:true},
-
-    
-}
+    'equal': { type: 'operator', value: '=',rowId:0,position:4,doubleKey:true, basicOperation:true}
+};
