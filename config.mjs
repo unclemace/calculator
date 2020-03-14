@@ -36,7 +36,7 @@ export const keysEngineer = {
     'percent':{type:'operator',value:'%',rowId:4,position:8},
     'division':{type:'operator',value:'/',rowId:4,position:9, basicOperation:true},
 
-    '2nd':{type:'operator',value:'2^nd',rowId:3,position:0},
+    '2nd':{type:'operator',value:'2^',rowId:3,position:0},
     'square':{type:'operator',value:'x^2',rowId:3,position:1},
     'cube':{type:'operator',value:'x^3',rowId:3,position:2},
     'xy':{type:'operator',value:'x^y',rowId:3,position:3},
@@ -126,3 +126,4 @@ export const keysProgrammer = {
     'oo': { type: 'number', value:'00' ,rowId:0,position:3},
     'equal': { type: 'operator', value: '=',rowId:0,position:4,doubleKey:true, basicOperation:true}
 };
+
