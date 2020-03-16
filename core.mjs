@@ -73,7 +73,7 @@ function processClick(keyConfig, id) {
                 return processOperationClick(id);
             }
         }
-        else if(state.typesArr[state.typesArr.length-1] === 'number' || !isBinaryOperator(keyConfig.value) || isBinaryOperator(keys[state.lastOperation].value))
+        else if(state.typesArr[state.typesArr.length-1] === 'number' || !isBinaryOperator(keyConfig.value) || !isBinaryOperator(keys[state.lastOperation].value))
         {
 
             if(id === 'equal' && state.lastOperation !=='equal' && (state.typesArr[state.typesArr.length-1]!=='operator' ||state.lastOperation === 'rscope'))
@@ -81,8 +81,13 @@ function processClick(keyConfig, id) {
                 if ( state.calculatedExpr[state.calculatedExpr.length-1] == ' '){
                     state.calculatedExpr = state.calculatedExpr.slice(0,-1);
                 }
+                if (state.calculatedExpr[0]=== '-'){
+                    state.calculatedExpr = '0 '+state.calculatedExpr;
+                }
+                state.calculatedExpr.replace('  ', ' ')
                 state.expression = calculate(state.calculatedExpr);;
                 setOperation('equal');
+                state.typesArr.push('number');
                 setCalcExpr(state.expression.toString());
                 return state.expression;
             }
@@ -189,18 +194,18 @@ function changeCalcExpr(value){
     if (isOperator(value)){
         if(state.calculatedExpr.length == 0) {
             if(value === '-'){
-                const expresion = state.calculatedExpr.toString()+value.toString();
+                const expresion = state.calculatedExpr.toString()+value.toString()+ ' ';
                 return setCalcExpr(expresion);
             }
             const expresion = state.calculatedExpr.toString()+value.toString() + " ";
             return setCalcExpr(expresion);
         }else {
-            if (value === '(' || !isBinaryOperator(value)){
-                const expresion = state.calculatedExpr.toString()+value.toString()+ " ";
+            if (value === ')'){
+                const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
                 return setCalcExpr(expresion);
             }
-            if (value === ')'){
-                const expresion = state.calculatedExpr.toString()+ " " + value.toString();
+            if (value === '(' || !isBinaryOperator(value)){
+                const expresion = state.calculatedExpr.toString()+value.toString()+ " ";
                 return setCalcExpr(expresion);
             }
             const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
@@ -260,6 +265,3 @@ function setMemory(value){
 function setResult(value) {
     viewField.innerHTML = value.toString();
 }
-
-
-console.log(calculate('4 * ( 3 + 2 )'));
