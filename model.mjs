@@ -1,7 +1,8 @@
-import {isOperator} from './core.mjs'
+import {keys} from './core.mjs';
 
 export function calculate(input){
     const output = getExpression(input);
+    console.log(output);
     const result = counting(output);
     return result;
 }
@@ -15,6 +16,7 @@ function getExpression(input){
                 output += token+' ';
             }
             else if(isOperator(token)){
+                console.log(oper);
                 if(token === '('){
                     oper.push(token)
                 }
@@ -48,29 +50,48 @@ function getExpression(input){
 
 export function counting(postfix){
     let temp = [];
+    console.log(postfix);
     postfix
     .split(' ')
     .reduce((result,token,index) => {
         if(!isNaN(parseInt(token))){
             temp.push(token);
-            // console.log(temp);
         }
         else if (isOperator(token)){
-            console.log(temp);
-            let a = parseFloat(temp.pop());
-            let b = parseFloat(temp.pop());
-            console.log('a' + a);
-            console.log('b' + b);
+            let a = 0;
+            let b = 0;
+            if (token === '('){
+                return result;
+            }
+            if (isBinaryOperator(token)){
+                a = parseFloat(temp.pop());
+                b = parseFloat(temp.pop());
+                console.log('a = '+ a);
+                console.log('b = '+ b);
+            }else {
+                a = parseFloat(temp.pop());
+                console.log(a);
+            }
             switch(token){
                 case '+': result = b + a; break;
                 case '-': result = b - a; break;
                 case '*': result = b * a; break;
                 case '/': result = b / a; break;
                 case '%': result = b % a; break;
-                case '^': result = parseFloat(Math.pow(parseFloat(b.toString()), parseFloat(a.toString())).toString()); break;
+                case '^': result = parseFloat(Math.pow(b, a)); break;
+                case '√': result = parseFloat(Math.pow(a, 1/2)); break;
+                case '∛': result = parseFloat(Math.pow(a, 1/3)); break;
+                case 'ln': result = parseFloat(Math.log(a)); break;
+                case 'log': result = parseFloat(Math.log10(a)); break;
+                case '!': result = factorial(a);break;
                 case 'sin': result = parseFloat(Math.sin(a));break;
                 case 'cos': result = parseFloat(Math.cos(a));break;
-
+                case 'tan': result = parseFloat(Math.tan(a));break;
+                case 'sinh': result = parseFloat(Math.sinh(a));break;
+                case 'cosh': result = parseFloat(Math.cosh(a));break;
+                case 'tanh': result = parseFloat(Math.tanh(a));break;
+                case 'rand': a<=1?result = Math.random():result = Math.floor(Math.random() * (a - 1)) + 1;break;
+                default:break;
             }
             temp.push(result);
         }
@@ -80,120 +101,23 @@ export function counting(postfix){
     return temp.pop();
 }
 
+function factorial(n) {
+    return (n != 1) ? n * factorial(n - 1) : 1;
+  }
+
 function getPriority(value) {
-    switch (value){
-        case '(': return 0;
-        case ')': return 1;
-        case '+': return 2;
-        case '-': return 3;
-        case '*': return 4;
-        case '/': return 4;
-        case '%': return 5
-        case '^': return 6;
-        case 'sin': return 7;
-        case 'cos': return 8;
+    let priorityKey = Object.keys(keys).filter(key => keys[key].value === value);
+    return keys[priorityKey].priority;
+}
 
-        default: return 9;
-    }
+export function isOperator(value){
+    const operators = Object.keys(keys).filter(key => keys[key].type === 'operator');
+    return operators.some(key => keys[key].value === value);
+}
 
+export function isBinaryOperator(value){
+    const operators = Object.keys(keys).filter(key => keys[key].binary === true);
+    return operators.some(key => keys[key].value === value);
 }
 
 
-
-
-
-// function counting(input)
-// {
-//     let result = 0; 
-//     let temp = []; 
-//     for (let i = 0; i < input.length; i++) 
-//     {
-//         if (!isNaN(parseInt(input[i]))) 
-//         {
-//             let a = '';
-//             while ((input[i]!== " ") && (!isOperator(input[i]))) 
-//             {
-//                 a += input[i]; 
-//                 i++;
-//                 if (i == input.length) {
-//                     break;
-//                 }
-//             }
-//             temp.push(parseFloat(a)); 
-//             i--;
-//         }
-//         else if (isOperator(input[i])) 
-//         {
-            
-//             let a = temp.pop(); 
-//             let b = temp.pop();
-
-//             switch (input[i]) 
-//             { 
-//                 case '+': result = b + a; break;
-//                 case '-': result = b - a; break;
-//                 case '*': result = b * a; break;
-//                 case '/': result = b / a; break;
-//                 case '%': result = b % a; break;
-//                 case '^': result = parseFloat(Math.pow(parseFloat(b.toString()), parseFloat(a.toString())).toString()); break;
-//                 case 'sin': result = parseFloat(Math.sin(a));
-
-//             }
-//             temp.push(result); 
-//         }
-//     }
-//     return temp.pop(); 
-// }
-
-
-// function getExpression(input)
-// {
-//    let output = '';
-//    let operators = [];
-//     for (let i = 0; i < input.length; i++)
-//     { 
-//         if (!isNaN(parseInt(input[i])))
-//         {
-//              while (!isOperator(input[i]))
-//              {
-//                  output+=input[i];
-//                  i++;
-//                  if (i == input.length){
-//                      break;
-//                  } 
-//              }
-//              output+=' '; 
-//              i--;
-//         }
-//         if (isOperator(input[i])) 
-//         {
-//             if (input[i] == '('){
-//                 operators.push(input[i]);
-//             }
-//             else if (input[i] == ')')
-//             {
-//                 let s = operators.pop();
-
-//                 while (s != '(')
-//                 {
-//                     output += s.toString() + ' ';
-//                     s = operators.pop();
-//                 }
-//             }
-//             else 
-//             {
-//                 if (operators.length > 0)
-//                     if (getPriority(input[i]) <= getPriority(operators[operators.length - 1])){
-//                         output += operators.pop().toString() + " "; 
-//                     }
-//                 operators.push(input[i].toString());
-//             }
-//         }
-//     }
-
-//     while (operators.length > 0)
-//         output += operators.pop() + " ";
-
-//     return output; 
-
-// }

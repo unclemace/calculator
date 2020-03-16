@@ -51,9 +51,11 @@
     overflow: hidden;
     background-color: #242424;
     height: 150px;
+    padding-right: 15px;
     text-align: right;
     border: 1px solid grey;
     font-size: 80px;
+    font-weight: 100;
     color:#dedede;
     display: flex;
     justify-content: flex-end;
