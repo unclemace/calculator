@@ -66,21 +66,29 @@ function processClick(keyConfig, id) {
         return processNumberClick(keyConfig.value);
     }
     if (keyConfig.type === 'operator'){
-        if (state.calculatedExpr.length === 0){
+
+        if(id ==='clear')
+        {
+            return clearLastValue();
+        }
+
+        else if (state.calculatedExpr.length === 0){
             if (id === 'minus'){
                 return processOperationClick(id);
-            }else if (!isBinaryOperator(keyConfig.value)){
+            }else if (!isBinaryOperator(keyConfig.value) && keyConfig.value !== '!'){
                 return processOperationClick(id);
             }
         }
-        else if(state.typesArr[state.typesArr.length-1] === 'number' || !isBinaryOperator(keyConfig.value) || !isBinaryOperator(keys[state.lastOperation].value))
-        {
 
-            if(id === 'equal' && state.lastOperation !=='equal' && (state.typesArr[state.typesArr.length-1]!=='operator' ||state.lastOperation === 'rscope'))
+        else if(id === 'equal' && state.lastOperation !=='equal' && (state.typesArr[state.typesArr.length-1]!=='operator' || state.lastOperation === 'rscope'))
             {
                 if ( state.calculatedExpr[state.calculatedExpr.length-1] == ' '){
                     state.calculatedExpr = state.calculatedExpr.slice(0,-1);
                 }
+                if ( state.calculatedExpr[0] == ' '){
+                    state.calculatedExpr = state.calculatedExpr.slice(1);
+                }
+
                 if (state.calculatedExpr[0]=== '-'){
                     state.calculatedExpr = '0 '+state.calculatedExpr;
                 }
@@ -90,12 +98,13 @@ function processClick(keyConfig, id) {
                 state.typesArr.push('number');
                 setCalcExpr(state.expression.toString());
                 return state.expression;
-            }
-    
-            if(id ==='clear')
-            {
-                return clearLastValue();
-            }
+        }
+
+        else if(state.typesArr[state.typesArr.length-1] === 'number' && isBinaryOperator(keyConfig.value))
+        {
+            return processOperationClick(id);
+        }
+        else if (state.typesArr[state.typesArr.length-1] !== 'number' && isBinaryOperator(keys[state.lastOperation].value)){
             return processOperationClick(id);
         }
     }
@@ -118,12 +127,12 @@ function processNumberClick(value) {
 
 function processOperationClick(value) {
     if (value !== 'equal'){
+        state.typesArr.push('operator');
         if(isConvertibleOperation(keys[value].value)){
             convertOperation(keys[value].value);
-        }else{ 
+        }else {
             changeCalcExpr(keys[value].value);
         }
-        state.typesArr.push('operator');
         setOperation(value);
         changeExpression(keys[value].value);
     }
@@ -133,7 +142,7 @@ function processMemoryClick(value) {
     let memory = state.memory;
     switch (value) {
         case 'mr':
-            
+            setMemory(parseFloat(state.expression));
             break;
         case 'mc':
             setMemory(0);
@@ -160,9 +169,13 @@ function convertOperation(value){
            break;
         case '^2':
            changeCalcExpr(' ^ 2'); 
+           state.typesArr.pop();
+           state.typesArr.push('number');
            break;
         case '^3':
            changeCalcExpr(' ^ 3'); 
+           state.typesArr.pop();
+           state.typesArr.push('number');
            break;
         case 'e^':
            changeCalcExpr('2.71828 ^ '); 
@@ -175,9 +188,13 @@ function convertOperation(value){
             break;
         case 'e':
             changeCalcExpr('2.71828');
+            state.typesArr.pop();
+            state.typesArr.push('number');
             break;
         case 'π':
             changeCalcExpr('3.14159');
+            state.typesArr.pop();
+            state.typesArr.push('number');
             break;
        default:
            break;
@@ -204,10 +221,18 @@ function changeCalcExpr(value){
                 const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
                 return setCalcExpr(expresion);
             }
+            if (value === '!'){
+                const expresion = " ! " + state.calculatedExpr.toString();
+                state.typesArr.pop();
+                state.typesArr.push('number');
+                return setCalcExpr(expresion);  
+            }
+
             if (value === '(' || !isBinaryOperator(value)){
                 const expresion = state.calculatedExpr.toString()+value.toString()+ " ";
                 return setCalcExpr(expresion);
             }
+
             const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
             return setCalcExpr(expresion);
         }
