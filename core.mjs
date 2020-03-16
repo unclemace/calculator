@@ -62,15 +62,21 @@ function removeKeyboard() {
 
 function processClick(keyConfig, id) {
     console.log(state);
-    console.log(keyConfig);
     if(keyConfig.type === 'number' ) {
         return processNumberClick(keyConfig.value);
     }
     if (keyConfig.type === 'operator'){
-        if(state.typesArr[state.typesArr.length-1] === 'number' || !isBinaryOperator(keyConfig.value))
+        if (state.calculatedExpr.length === 0){
+            if (id === 'minus'){
+                return processOperationClick(id);
+            }else if (!isBinaryOperator(keyConfig.value)){
+                return processOperationClick(id);
+            }
+        }
+        else if(state.typesArr[state.typesArr.length-1] === 'number' || !isBinaryOperator(keyConfig.value) || isBinaryOperator(keys[state.lastOperation].value))
         {
 
-            if(id === 'equal' && state.lastOperation !=='equal' && !isOperator(state.calculatedExpr[-1]))
+            if(id === 'equal' && state.lastOperation !=='equal' && (state.typesArr[state.typesArr.length-1]!=='operator' ||state.lastOperation === 'rscope'))
             {
                 if ( state.calculatedExpr[state.calculatedExpr.length-1] == ' '){
                     state.calculatedExpr = state.calculatedExpr.slice(0,-1);
@@ -87,7 +93,7 @@ function processClick(keyConfig, id) {
             }
             return processOperationClick(id);
         }
-        }
+    }
 
 }
 
@@ -101,7 +107,7 @@ function processNumberClick(value) {
         changeCalcExpr(value);
     }
     
-    addToTypes('number');
+    state.typesArr.push('number');
    
 }
 
@@ -112,7 +118,7 @@ function processOperationClick(value) {
         }else{ 
             changeCalcExpr(keys[value].value);
         }
-        addToTypes('operator');
+        state.typesArr.push('operator');
         setOperation(value);
         changeExpression(keys[value].value);
     }
@@ -194,7 +200,7 @@ function changeCalcExpr(value){
                 return setCalcExpr(expresion);
             }
             if (value === ')'){
-                const expresion = state.calculatedExpr.toString()+" " + value.toString();
+                const expresion = state.calculatedExpr.toString()+ " " + value.toString();
                 return setCalcExpr(expresion);
             }
             const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
@@ -212,6 +218,7 @@ function clearLastValue(){
         setOperation('');
         setExpression('');
         setCalcExpr('');
+        state.typesArr = [];
     }
     
     let calc = state.calculatedExpr.split(' ');
@@ -219,16 +226,16 @@ function clearLastValue(){
     if (calc.indexOf('')>-1){
         calc = calc.slice(0,-1);
     }
-    
+
     if (state.typesArr[state.typesArr.length-1] === 'operator'){
         let newExpr = calc.slice(0,-1);
         setCalcExpr(newExpr.join(' '));
         setExpression(newExpr.join(''));
-        state.lastOperation.type = state.typesArr.pop();
-        state.typesArr.pop();
+        state.lastOperation = state.typesArr.pop();
     }else {
         setCalcExpr(calc.join(' ').slice(0,-1));
         setExpression(calc.join('').slice(0,-1));
+        state.typesArr.pop();
 
     }
     
@@ -240,10 +247,6 @@ function setOperation(operation) {
 
 function setExpression(value){
     state.expression = value;
-}
-
-function addToTypes(value){
-    state.typesArr.push(value);
 }
 
 function setCalcExpr(value) {

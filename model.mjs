@@ -119,5 +119,3 @@ export function isBinaryOperator(value){
     const operators = Object.keys(keys).filter(key => keys[key].binary === true);
     return operators.some(key => keys[key].value === value);
 }
-
-

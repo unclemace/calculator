@@ -40,7 +40,7 @@ export const keysEngineer = {
     'square':{type:'operator',value:'^2',rowId:3,position:1, binary: false, priority: 3, convertible:true},
     'cube':{type:'operator',value:'^3',rowId:3,position:2, binary: false, priority:3 , convertible:true},
     'xy':{type:'operator',value:'^',rowId:3,position:3, binary: true, priority: 3},
-    'ex':{type:'operator',value:'e^',rowId:3,position:4, binary: true, priority: 3, convertible:true},
+    'ex':{type:'operator',value:'e^',rowId:3,position:4, binary: false, priority: 3, convertible:true},
     '10x':{type:'operator',value:'10^',rowId:3,position:5, binary: false, priority: 3, convertible:true},
     'seven': { type: 'number',  value: 7,rowId:3,position:6},
     'eight': { type: 'number',  value: 8,rowId:3,position:7},
