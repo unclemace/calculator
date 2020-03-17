@@ -55,6 +55,10 @@ function addListenersToButtons() {
     });
 }
 
+function setResult(value) {
+    viewField.innerHTML = value.toString();
+}
+
 function removeKeyboard() {
     const keyboard = document.querySelector('.basic');
     keyboard.removeChild(keyboard.firstChild);
@@ -63,7 +67,18 @@ function removeKeyboard() {
 function processClick(keyConfig, id) {
     console.log(state);
     if(keyConfig.type === 'number' ) {
-        return processNumberClick(keyConfig.value);
+        if (state.lastOperation !== ''){
+            if (isBinaryOperator(keys[state.lastOperation].value) && keys[state.lastOperation].value !== ')')
+            {
+                return processNumberClick(keyConfig.value);
+            }
+            else if (!isPrefixOper(keys[state.lastOperation].value))
+            {
+                return processNumberClick(keyConfig.value);
+            }
+        }else {
+            return processNumberClick(keyConfig.value);
+        }
     }
     if (keyConfig.type === 'operator'){
 
@@ -71,44 +86,87 @@ function processClick(keyConfig, id) {
         {
             return clearLastValue();
         }
+        else if (id === 'mr' || id === 'mplus' || id === 'mminus' || id === 'mc'){
+            if (id === 'mplus' || id === 'mminus'){
+                if (state.lastOperation === 'equal'){
+                    processMemoryClick(id);
+                }
+            }else {
+                processMemoryClick(id);
+            }
+        }
+        else if (keyConfig.value === '='){
+            return validateAndCalc();
+        }
 
-        else if (state.calculatedExpr.length === 0){
-            if (id === 'minus'){
-                return processOperationClick(id);
-            }else if (!isBinaryOperator(keyConfig.value) && keyConfig.value !== '!'){
+        else if (state.calculatedExpr.length === 0 )
+        {
+            if (isValidForFirstOper(id)){
                 return processOperationClick(id);
             }
         }
-
-        else if(id === 'equal' && state.lastOperation !=='equal' && (state.typesArr[state.typesArr.length-1]!=='operator' || state.lastOperation === 'rscope'))
-            {
-                if ( state.calculatedExpr[state.calculatedExpr.length-1] == ' '){
-                    state.calculatedExpr = state.calculatedExpr.slice(0,-1);
+        else if (!isBinaryOperator(keyConfig.value) && isPrefixOper(keyConfig.value)){
+            if (state.typesArr[state.typesArr.length-1] === 'operator'){
+                if (isBinaryOperator(keys[state.lastOperation].value))
+                {
+                    return processOperationClick(id);
                 }
-                if ( state.calculatedExpr[0] == ' '){
-                    state.calculatedExpr = state.calculatedExpr.slice(1);
-                }
-
-                if (state.calculatedExpr[0]=== '-'){
-                    state.calculatedExpr = '0 '+state.calculatedExpr;
-                }
-                state.calculatedExpr.replace('  ', ' ')
-                state.expression = calculate(state.calculatedExpr);;
-                setOperation('equal');
-                state.typesArr.push('number');
-                setCalcExpr(state.expression.toString());
-                return state.expression;
+                
+            }
         }
-
-        else if(state.typesArr[state.typesArr.length-1] === 'number' && isBinaryOperator(keyConfig.value))
-        {
-            return processOperationClick(id);
-        }
-        else if (state.typesArr[state.typesArr.length-1] !== 'number' && isBinaryOperator(keys[state.lastOperation].value)){
-            return processOperationClick(id);
+        else if (isBinaryOperator(keyConfig.value) || !isPrefixOper(keyConfig.value)){
+            if (state.typesArr[state.typesArr.length-1] === 'number' || state.lastOperation === 'rscope'){
+                return processOperationClick(id);
+            }
+            else if (isPrefixOper(state.lastOperation) && keyConfig.value === '('){
+                return processOperationClick(id);
+            }
         }
     }
 
+}
+
+function isPrefixOper(value){
+    const prefix = Object.keys(keys).filter( key => keys[key].prefix === true);
+    return prefix.some(key => keys[key].value === value);
+}
+
+function validateAndCalc(){
+    if ( state.calculatedExpr[state.calculatedExpr.length-1] == ' '){
+        setCalcExpr(state.calculatedExpr.slice(0,-1));
+    }
+    if ( state.calculatedExpr[0] == ' '){
+        setCalcExpr(state.calculatedExpr.slice(1));
+    }
+    if (state.calculatedExpr[0]=== '-'){
+        setCalcExpr('0 '+ state.calculatedExpr);
+    }
+    setCalcExpr(state.calculatedExpr.replace('  ', ' '));
+    let res = calculate(state.calculatedExpr);
+
+    if (res === NaN){
+        state.expression = 'Error';
+        setOperation('equal');
+        setCalcExpr('');
+        return state.expression;
+    }
+    else {
+        state.expression = res;
+        setOperation('equal');
+        state.typesArr.push('number');
+        setCalcExpr(state.expression.toString());
+        return state.expression;
+    }
+}
+
+function isValidForFirstOper(id){
+    if (!isBinaryOperator(keys[id].value) || id === 'lscope' || id === 'minus'){
+        if ( id !== 'square' && id !=='cube' && id !== 'fact' && id !== 'nRoot' && id !== 'xy' && id !== 'rscope'){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }
 
 function processNumberClick(value) {
@@ -132,8 +190,8 @@ function processOperationClick(value) {
             convertOperation(keys[value].value);
         }else {
             changeCalcExpr(keys[value].value);
+            setOperation(value);
         }
-        setOperation(value);
         changeExpression(keys[value].value);
     }
 }
@@ -142,13 +200,15 @@ function processMemoryClick(value) {
     let memory = state.memory;
     switch (value) {
         case 'mr':
-            setMemory(parseFloat(state.expression));
+            setExpression(memory.toString());
+            setCalcExpr(memory.toString());
+            setOperation('minus');
             break;
         case 'mc':
             setMemory(0);
             break;
         case 'mplus':
-            setMemory(memory+parseFloat(state.expression));
+            setMemory(memory + parseFloat(state.expression));
             break;
         case 'mminus':
             setMemory(memory - parseFloat(state.expression));
@@ -165,31 +225,52 @@ function isConvertibleOperation(value){
 function convertOperation(value){
    switch (value) {
        case '2^':
-           changeCalcExpr('2 ^ '); 
+           changeCalcExpr('2 ^ ');
+           state.typesArr.pop();
+           state.typesArr.push('number');
+           state.typesArr.push('operator'); 
+           setOperation('xy');
            break;
         case '^2':
            changeCalcExpr(' ^ 2'); 
            state.typesArr.pop();
+           state.typesArr.push('operator');
            state.typesArr.push('number');
+           setOperation('xy');
            break;
         case '^3':
            changeCalcExpr(' ^ 3'); 
            state.typesArr.pop();
+           state.typesArr.push('operator');
            state.typesArr.push('number');
+           setOperation('xy');
            break;
         case 'e^':
            changeCalcExpr('2.71828 ^ '); 
+           state.typesArr.pop();
+           state.typesArr.push('number');
+           state.typesArr.push('operator'); 
+           setOperation('xy');
            break;
         case '10^':
-           changeCalcExpr('10 ^ '); 
+           changeCalcExpr('10 ^ ');
+           state.typesArr.pop();
+           state.typesArr.push('number');
+           state.typesArr.push('operator'); 
+           setOperation('xy'); 
            break;
         case '1/':
             changeCalcExpr('1 / ');
+            state.typesArr.pop();
+            state.typesArr.push('number');
+            state.typesArr.push('operator');
+            setOperation('division');
             break;
         case 'e':
             changeCalcExpr('2.71828');
             state.typesArr.pop();
             state.typesArr.push('number');
+            state.typesArr.push('operator'); 
             break;
         case 'π':
             changeCalcExpr('3.14159');
@@ -201,7 +282,6 @@ function convertOperation(value){
    }
 }
 
-
 function changeExpression(value) {
     const expresion = state.expression.toString()+value.toString();
     setExpression(expresion);
@@ -209,33 +289,12 @@ function changeExpression(value) {
 
 function changeCalcExpr(value){
     if (isOperator(value)){
-        if(state.calculatedExpr.length == 0) {
-            if(value === '-'){
-                const expresion = state.calculatedExpr.toString()+value.toString()+ ' ';
-                return setCalcExpr(expresion);
-            }
-            const expresion = state.calculatedExpr.toString()+value.toString() + " ";
-            return setCalcExpr(expresion);
-        }else {
-            if (value === ')'){
-                const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
-                return setCalcExpr(expresion);
-            }
-            if (value === '!'){
-                const expresion = " ! " + state.calculatedExpr.toString();
-                state.typesArr.pop();
-                state.typesArr.push('number');
-                return setCalcExpr(expresion);  
-            }
-
-            if (value === '(' || !isBinaryOperator(value)){
-                const expresion = state.calculatedExpr.toString()+value.toString()+ " ";
-                return setCalcExpr(expresion);
-            }
-
-            const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
+        if (value === '!'){
+            const expresion = " ! " + state.calculatedExpr.toString();
             return setCalcExpr(expresion);
         }
+        const expresion = state.calculatedExpr.toString()+ " " +value.toString()+ " ";
+        return setCalcExpr(expresion);
     }else {
         const expresion = state.calculatedExpr.toString()+value.toString();
         return setCalcExpr(expresion);
@@ -243,19 +302,16 @@ function changeCalcExpr(value){
 }
 
 function clearLastValue(){
-
     if (state.lastOperation === 'equal'){
         setOperation('');
         setExpression('');
         setCalcExpr('');
         state.typesArr = [];
     }
-    
+    state.calculatedExpr.replace('  ',' ');
     let calc = state.calculatedExpr.split(' ');
 
-    if (calc.indexOf('')>-1){
-        calc = calc.slice(0,-1);
-    }
+    deleteElement(calc,'');
 
     if (state.typesArr[state.typesArr.length-1] === 'operator'){
         let newExpr = calc.slice(0,-1);
@@ -266,9 +322,21 @@ function clearLastValue(){
         setCalcExpr(calc.join(' ').slice(0,-1));
         setExpression(calc.join('').slice(0,-1));
         state.typesArr.pop();
+    
+    }
 
+    if (state.expression.length === 0){
+        setOperation('');
     }
     
+}
+
+function deleteElement(arr, value){
+    while (arr.indexOf(value) != -1){
+        let ind = arr.indexOf(value);
+        arr.splice(ind,1);
+    }
+    return arr;
 }
 
 function setOperation(operation) {
@@ -285,8 +353,4 @@ function setCalcExpr(value) {
 
 function setMemory(value){
     state.memory = value;
-}
-
-function setResult(value) {
-    viewField.innerHTML = value.toString();
 }
