@@ -45,6 +45,25 @@ menu.addEventListener('click', (e) => {
     addListenersToButtons();
 });
 
+document.addEventListener('keydown', e => {
+    const keyName = e.key;
+    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','*','^','/','+','-'];
+    if (allowedKeys.some(key => key === keyName)){
+        changeCalcExpr(keyName);
+        changeExpression(keyName);
+    }
+
+    if (keyName === 'Enter'){
+        validateAndCalc();
+    }
+    if (keyName === 'Backspace'){
+        clearLastValue();
+    }
+    setResult(state.expression);
+
+    // console.log(keyName)
+});
+
 function addListenersToButtons() {
     const keyboard = document.querySelector('.keyboard');
     keyboard.addEventListener('click', (e) => {
