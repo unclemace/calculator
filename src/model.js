@@ -1,4 +1,4 @@
-import {keys} from './core.mjs';
+import {keys} from './core.js';
 
 export function calculate(input){
     const output = getExpression(input);

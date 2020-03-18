@@ -1,6 +1,6 @@
-import {keysBasic,keysEngineer,keysProgrammer} from './config.mjs';
-import {render} from './render.mjs' 
-import {calculate, isOperator, isBinaryOperator} from './model.mjs';
+import {keysBasic,keysEngineer,keysProgrammer} from './config.js';
+import {render} from './render.js'
+import {calculate, isOperator, isBinaryOperator} from './model.js';
 
 
 export let keys = keysEngineer;
@@ -85,17 +85,18 @@ function processKeyboardPress(e) {
     if (allowedOperations.some(key => operations[key].value === keyName) && isValidOperation(allowedOperations.find(key => operations[key].value === keyName))){
         changeCalcExpr(keyName);
         changeExpression(keyName);
-        setOperation(allowedOperations.find(key => operations[key].value === keyName))
+        setOperation(allowedOperations.find(key => operations[key].value === keyName));
         console.log(state);
         state.typesArr.push('operator');
     }
 
     if (keyName === 'Enter'){
-        validateAndCalc();
-        console.log(state);
+        state.typesArr = [];
+        return validateAndCalc();
+
     }
     if (keyName === 'Backspace'){
-        clearLastValue();
+        return clearLastValue();
     }
 
 }
@@ -140,6 +141,7 @@ function processClick(keyConfig, id) {
             }
         }
         else if (keyConfig.value === '='){
+            state.typesArr = [];
             return validateAndCalc();
         }
         else if(isValidOperation(id))
@@ -159,7 +161,7 @@ function isValidOperation(id) {
         if (key === '('){
             state.bracketOpen+=1;
         }
-        return key !== '!'  && isPrefixOperation(key) || key === '-';
+        return key !== '!'  && isPrefixOperation(key) || key === '-'|| key === 'e' || key === 'π';
     }
     else if (lastType === 'number' && (isBinaryOperator(key) || !isPrefixOperation(key))){
         if (state.bracketOpen !== 0 && key === ')'){
@@ -177,7 +179,7 @@ function isValidOperation(id) {
         else if (isBinaryOperator(key) && state.lastOperation === 'rscope' && key!==')'){
             return true;
         }
-        else if (isPrefixOperation(state.lastOperation) && key === '('){
+        else if (isPrefixOperation(keys[state.lastOperation].value) && key === '('){
             state.bracketOpen+=1;
             return true;
         }
@@ -267,7 +269,8 @@ function processMemoryClick(value) {
         case 'mr':
             setExpression(memory.toString());
             setCalcExpr(memory.toString());
-            setOperation('minus');
+            setOperation('');
+            state.typesArr.push('number');
             break;
         case 'mc':
             setMemory(0);
@@ -335,7 +338,6 @@ function convertOperation(value){
             changeCalcExpr('2.71828');
             state.typesArr.pop();
             state.typesArr.push('number');
-            state.typesArr.push('operator'); 
             break;
         case 'π':
             changeCalcExpr('3.14159');
