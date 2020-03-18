@@ -47,7 +47,6 @@ menu.addEventListener('click', (e) => {
     setCalcExpr('');
     state.typesArr = [];
     addListenersToButtons();
-    addListenersToKeyboard();
 });
 
 function addListenersToKeyboard() {

@@ -50,7 +50,7 @@ export const keysEngineer = {
     '1-div-x':{type:'operator',value:'1/',rowId:2,position:0, binary: false, priority: 3, convertible:true, prefix:true},
     'squareRoot':{type:'operator',value:'√',rowId:2,position:1, binary: false, priority: 3, prefix: true },
     'cubeRoot':{type:'operator',value:'∛',rowId:2,position:2, binary: false, priority: 3, prefix: true },
-    'nRoot':{type:'operator',value:'√',rowId:2,position:3, binary: true, priority: 3},
+    'nRoot':{type:'operator',value:'root',rowId:2,position:3, binary: true, priority: 3},
     'ln':{type:'operator',value:'ln',rowId:2,position:4, binary: false, priority: 3, prefix: true },
     'log':{type:'operator',value:'log',rowId:2,position:5, binary: false, priority: 3, prefix: true },
     'four': { type: 'number',  value: 4,rowId:2,position:6},

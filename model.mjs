@@ -90,6 +90,7 @@ export function counting(postfix){
                 case 'cosh': result = parseFloat(Math.cosh(a));break;
                 case 'tanh': result = parseFloat(Math.tanh(a));break;
                 case 'rand': a<=1?result = Math.random():result = Math.floor(Math.random() * (a - 1)) + 1;break;
+                case  'root':result = parseFloat(Math.pow(a,1/b));break;
                 default:break;
             }
             temp.push(result);
