@@ -3,8 +3,7 @@ import {keys} from './core.mjs';
 export function calculate(input){
     const output = getExpression(input);
     console.log(output);
-    const result = counting(output);
-    return result;
+    return counting(output);
 }
 
 function getExpression(input){
@@ -22,7 +21,7 @@ function getExpression(input){
                 }
                 if(token === ')'){
                     let s = oper.pop();
-                    while (s != '(')
+                    while (s !== '(')
                     {
                         output+= s.toString() + ' ';
                         s = oper.pop();

@@ -10,7 +10,8 @@ const state = {
     memory:0,
     calculatedExpr:'',
     expression:'',
-    typesArr:[]
+    typesArr:[],
+    bracketOpen:0
 };
 
 
@@ -21,6 +22,7 @@ const menu = document.querySelector('.menu');
 
 setResult('');
 addListenersToButtons();
+addListenersToKeyboard();
 
 menu.addEventListener('click', (e) => {
     const id = e.target.id;
@@ -42,27 +44,62 @@ menu.addEventListener('click', (e) => {
     setResult('');
     setOperation('');
     setExpression('');
+    setCalcExpr('');
+    state.typesArr = [];
     addListenersToButtons();
+    addListenersToKeyboard();
 });
 
-document.addEventListener('keydown', e => {
+function addListenersToKeyboard() {
+    document.addEventListener('keydown', e => {
+        processKeyboardPress(e);
+        setResult(state.expression);
+    });
+}
+
+function processKeyboardPress(e) {
     const keyName = e.key;
-    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','*','^','/','+','-'];
-    if (allowedKeys.some(key => key === keyName)){
+    const allowedNumbers = ['0','1','2','3','4','5','6','7','8','9','.'];
+    const operations = {
+        'plus': {value:'+'},
+        'minus': { value:'-'},
+        'multiply': { value:'*'},
+        'division':{ value:'/'},
+        'percent':{ value:'%'},
+        'lscope':{value:'('},
+        'rscope':{value:')'}
+    };
+
+    const allowedOperations = Object.keys(operations);
+
+    if (allowedNumbers.some(key => key === keyName) && isValidNumber()){
+        if (state.lastOperation === 'equal'){
+            setCalcExpr('');
+            setExpression('');
+            setOperation('');
+        }
         changeCalcExpr(keyName);
         changeExpression(keyName);
+        console.log(state);
+        state.typesArr.push('number');
+    }
+    if (allowedOperations.some(key => operations[key].value === keyName) && isValidOperation(allowedOperations.find(key => operations[key].value === keyName))){
+        changeCalcExpr(keyName);
+        changeExpression(keyName);
+        setOperation(allowedOperations.find(key => operations[key].value === keyName))
+        console.log(state);
+        state.typesArr.push('operator');
     }
 
     if (keyName === 'Enter'){
         validateAndCalc();
+        console.log(state);
     }
     if (keyName === 'Backspace'){
         clearLastValue();
     }
-    setResult(state.expression);
 
-    // console.log(keyName)
-});
+}
 
 function addListenersToButtons() {
     const keyboard = document.querySelector('.keyboard');
@@ -85,21 +122,10 @@ function removeKeyboard() {
 
 function processClick(keyConfig, id) {
     console.log(state);
-    if(keyConfig.type === 'number' ) {
-        if (state.lastOperation !== ''){
-            if (isBinaryOperator(keys[state.lastOperation].value) && keys[state.lastOperation].value !== ')')
-            {
-                return processNumberClick(keyConfig.value);
-            }
-            else if (!isPrefixOper(keys[state.lastOperation].value))
-            {
-                return processNumberClick(keyConfig.value);
-            }
-        }else {
-            return processNumberClick(keyConfig.value);
-        }
+    if(keyConfig.type === 'number' && isValidNumber(id)) {
+        processNumberClick(keyConfig.value);
     }
-    if (keyConfig.type === 'operator'){
+    else if (keyConfig.type === 'operator'){
 
         if(id ==='clear')
         {
@@ -108,53 +134,84 @@ function processClick(keyConfig, id) {
         else if (id === 'mr' || id === 'mplus' || id === 'mminus' || id === 'mc'){
             if (id === 'mplus' || id === 'mminus'){
                 if (state.lastOperation === 'equal'){
-                    processMemoryClick(id);
+                    return processMemoryClick(id);
                 }
             }else {
-                processMemoryClick(id);
+                return processMemoryClick(id);
             }
         }
         else if (keyConfig.value === '='){
             return validateAndCalc();
         }
-
-        else if (state.calculatedExpr.length === 0 )
+        else if(isValidOperation(id))
         {
-            if (isValidForFirstOper(id)){
-                return processOperationClick(id);
-            }
-        }
-        else if (!isBinaryOperator(keyConfig.value) && isPrefixOper(keyConfig.value)){
-            if (state.typesArr[state.typesArr.length-1] === 'operator'){
-                if (isBinaryOperator(keys[state.lastOperation].value))
-                {
-                    return processOperationClick(id);
-                }
-                
-            }
-        }
-        else if (isBinaryOperator(keyConfig.value) || !isPrefixOper(keyConfig.value)){
-            if (state.typesArr[state.typesArr.length-1] === 'number' || state.lastOperation === 'rscope'){
-                return processOperationClick(id);
-            }
-            else if (isPrefixOper(state.lastOperation) && keyConfig.value === '('){
-                return processOperationClick(id);
-            }
+            processOperationClick(id);
         }
     }
 
 }
 
-function isPrefixOper(value){
+function isValidOperation(id) {
+    const key = keys[id].value;
+    const lastType = state.typesArr[state.typesArr.length-1];
+
+    if (state.expression.length === 0)
+    {
+        if (key === '('){
+            state.bracketOpen+=1;
+        }
+        return key !== '!'  && isPrefixOperation(key) || key === '-';
+    }
+    else if (lastType === 'number' && (isBinaryOperator(key) || !isPrefixOperation(key))){
+        if (state.bracketOpen !== 0 && key === ')'){
+            state.bracketOpen -=1;
+        }
+        return true;
+    }
+    else if (state.lastOperation.length !== 0 ){
+        if (isBinaryOperator(keys[state.lastOperation].value) && isPrefixOperation(key)){
+            if (key === '('){
+                state.bracketOpen +=1;
+            }
+            return true;
+        }
+        else if (isBinaryOperator(key) && state.lastOperation === 'rscope' && key!==')'){
+            return true;
+        }
+        else if (isPrefixOperation(state.lastOperation) && key === '('){
+            state.bracketOpen+=1;
+            return true;
+        }
+        else  if (state.lastOperation === 'rscope' && state.bracketOpen !==0 && key === ')'){
+            state.bracketOpen -=1;
+            return true;
+        }
+    }
+    else  {
+        return false;
+    }
+}
+function isValidNumber() {
+    if(state.expression.length === 0){
+        return true
+    }
+    else if (state.lastOperation !== '' && state.lastOperation !== 'rscope' && (isBinaryOperator(keys[state.lastOperation].value) || state.lastOperation === 'lscope')){
+        return true;
+    }else return state.typesArr.length !== 0 && state.typesArr[state.typesArr.length - 1] === 'number';
+}
+
+
+
+function isPrefixOperation(value){
     const prefix = Object.keys(keys).filter( key => keys[key].prefix === true);
     return prefix.some(key => keys[key].value === value);
 }
 
 function validateAndCalc(){
-    if ( state.calculatedExpr[state.calculatedExpr.length-1] == ' '){
+    if ( state.calculatedExpr[state.calculatedExpr.length-1] === ' '){
         setCalcExpr(state.calculatedExpr.slice(0,-1));
     }
-    if ( state.calculatedExpr[0] == ' '){
+    if ( state.calculatedExpr[0] === ' '){
         setCalcExpr(state.calculatedExpr.slice(1));
     }
     if (state.calculatedExpr[0]=== '-'){
@@ -162,9 +219,9 @@ function validateAndCalc(){
     }
     setCalcExpr(state.calculatedExpr.replace('  ', ' '));
     let res = calculate(state.calculatedExpr);
-
-    if (res === NaN){
-        state.expression = 'Error';
+    
+    if (isNaN(res)){
+        setExpression('Error');
         setOperation('equal');
         setCalcExpr('');
         return state.expression;
@@ -175,16 +232,6 @@ function validateAndCalc(){
         state.typesArr.push('number');
         setCalcExpr(state.expression.toString());
         return state.expression;
-    }
-}
-
-function isValidForFirstOper(id){
-    if (!isBinaryOperator(keys[id].value) || id === 'lscope' || id === 'minus'){
-        if ( id !== 'square' && id !=='cube' && id !== 'fact' && id !== 'nRoot' && id !== 'xy' && id !== 'rscope'){
-            return true;
-        }else {
-            return false;
-        }
     }
 }
 
@@ -351,7 +398,7 @@ function clearLastValue(){
 }
 
 function deleteElement(arr, value){
-    while (arr.indexOf(value) != -1){
+    while (arr.indexOf(value) !== -1){
         let ind = arr.indexOf(value);
         arr.splice(ind,1);
     }

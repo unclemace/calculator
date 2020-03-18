@@ -25,8 +25,8 @@ export const keysBasic = {
 };
 
 export const keysEngineer = {
-    'lscope':{type:'operator',value:'(',rowId:4,position:0, priority: 0, binary: true},
-    'rscope':{type:'operator',value:')',rowId:4,position:1, priority: 0, binary: true},
+    'lscope':{type:'operator',value:'(',rowId:4,position:0, priority: 0, binary: true, prefix: true},
+    'rscope':{type:'operator',value:')',rowId:4,position:1, priority: 0, binary: true,prefix:false},
     'mc':{type:'operator',value:'mc',rowId:4,position:2},
     'mplus':{type:'operator',value:'m+',rowId:4,position:3},
     'mminus':{type:'operator',value:'m-',rowId:4,position:4},
@@ -47,7 +47,7 @@ export const keysEngineer = {
     'nine': { type: 'number',  value: 9,rowId:3,position:8},
     'multiply': { type: 'operator',value:'*',rowId:3,position:9, basicOperation:true, binary: true, priority: 2},
 
-    '1-div-x':{type:'operator',value:'1/',rowId:2,position:0, binary: false, priority: 3, convertible:true},
+    '1-div-x':{type:'operator',value:'1/',rowId:2,position:0, binary: false, priority: 3, convertible:true, prefix:true},
     'squareRoot':{type:'operator',value:'√',rowId:2,position:1, binary: false, priority: 3, prefix: true },
     'cubeRoot':{type:'operator',value:'∛',rowId:2,position:2, binary: false, priority: 3, prefix: true },
     'nRoot':{type:'operator',value:'√',rowId:2,position:3, binary: true, priority: 3},
@@ -106,7 +106,7 @@ export const keysProgrammer = {
     '1s':{type:'operator',value:"1's",rowId:3,position:6},
 
     'xLShiftY':{type:'operator',value:'X< <Y',rowId:2,position:0},
-    'xRShifttY':{type:'operator',value:'X>>Y',rowId:2,position:1},
+    'xRShiftY':{type:'operator',value:'X>>Y',rowId:2,position:1},
     'four': { type: 'number',  value: 4,rowId:2,position:2},
     'five': { type: 'number',  value: 5,rowId:2,position:3},
     'six': { type: 'number',  value: 6,rowId:2,position:4},
