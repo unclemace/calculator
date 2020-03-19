@@ -97,12 +97,12 @@ export function counting(postfix){
         }
         return result;
 
-    },'')
+    },'');
     return temp.pop();
 }
 
 function factorial(n) {
-    return (n != 1) ? n * factorial(n - 1) : 1;
+    return (n !== 1) ? n * factorial(n - 1) : 1;
   }
 
 function getPriority(value) {

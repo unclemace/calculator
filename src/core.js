@@ -82,7 +82,7 @@ function processKeyboardPress(e) {
         console.log(state);
         state.typesArr.push('number');
     }
-    if (allowedOperations.some(key => operations[key].value === keyName) && isValidOperation(allowedOperations.find(key => operations[key].value === keyName))){
+    if (allowedOperations.some(key => operations[key].value === keyName) && isValidOperator(allowedOperations.find(key => operations[key].value === keyName))){
         changeCalcExpr(keyName);
         changeExpression(keyName);
         setOperation(allowedOperations.find(key => operations[key].value === keyName));
@@ -144,7 +144,7 @@ function processClick(keyConfig, id) {
             state.typesArr = [];
             return validateAndCalc();
         }
-        else if(isValidOperation(id))
+        else if(isValidOperator(id))
         {
             processOperationClick(id);
         }
@@ -152,7 +152,7 @@ function processClick(keyConfig, id) {
 
 }
 
-function isValidOperation(id) {
+function isValidOperator(id) {
     const key = keys[id].value;
     const lastType = state.typesArr[state.typesArr.length-1];
 
@@ -161,16 +161,16 @@ function isValidOperation(id) {
         if (key === '('){
             state.bracketOpen+=1;
         }
-        return key !== '!'  && isPrefixOperation(key) || key === '-'|| key === 'e' || key === 'π';
+        return key !== '!'  && isPrefixOperator(key) || key === '-'|| key === 'e' || key === 'π';
     }
-    else if (lastType === 'number' && (isBinaryOperator(key) || !isPrefixOperation(key))){
+    else if (lastType === 'number' && (isBinaryOperator(key) || !isPrefixOperator(key))){
         if (state.bracketOpen !== 0 && key === ')'){
             state.bracketOpen -=1;
         }
         return true;
     }
     else if (state.lastOperation.length !== 0 ){
-        if (isBinaryOperator(keys[state.lastOperation].value) && isPrefixOperation(key)){
+        if (isBinaryOperator(keys[state.lastOperation].value) && isPrefixOperator(key)){
             if (key === '('){
                 state.bracketOpen +=1;
             }
@@ -179,7 +179,7 @@ function isValidOperation(id) {
         else if (isBinaryOperator(key) && state.lastOperation === 'rscope' && key!==')'){
             return true;
         }
-        else if (isPrefixOperation(keys[state.lastOperation].value) && key === '('){
+        else if (isPrefixOperator(keys[state.lastOperation].value) && key === '('){
             state.bracketOpen+=1;
             return true;
         }
@@ -203,7 +203,7 @@ function isValidNumber() {
 
 
 
-function isPrefixOperation(value){
+function isPrefixOperator(value){
     const prefix = Object.keys(keys).filter( key => keys[key].prefix === true);
     return prefix.some(key => keys[key].value === value);
 }
