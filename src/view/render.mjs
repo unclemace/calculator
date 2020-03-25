@@ -11,7 +11,7 @@ function drawButton(row, config,key) {
     const button = appendNamedDiv(row,'key');
     button.classList.add(`${config.type}-key`);
     button.id = key;
-    button.innerHTML = config.value;
+    button.innerHTML = key;
     if(config.doubleKey){
         button.classList.add('double-key');
     }
