@@ -1,0 +1,27 @@
+{
+  "name": "calculator",
+  "version": "1.0.0",
+  "description": "calculator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unclemace/unclebulawa-yandex.ru.git"
+  },
+  "author": "Erik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unclemace/unclebulawa-yandex.ru/issues"
+  },
+  "homepage": "https://github.com/unclemace/unclebulawa-yandex.ru#readme",
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "babel-loader": "^8.1.0",
+    "html-webpack-plugin": "^4.0.2",
+    "jest": "^25.2.7",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  }
+}
