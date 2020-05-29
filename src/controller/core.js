@@ -1,12 +1,14 @@
 import {keysBasic, keysEngineer, keysProgrammer} from './config.js';
-import {render} from '../view/render.js'
+import {Renderer} from '../view/render.js'
 import {Calculator} from  '../model/model';
 
 
 const calculator = new Calculator();
 
 export let keys = keysBasic;
-render(keys);
+const view = new Renderer();
+view.render(keys);
+
 const keyboard = document.querySelector('.keyboard');
 const viewField = document.querySelector('.view-field');
 const menu = document.querySelector('.menu');
@@ -37,7 +39,7 @@ menu.addEventListener('click', (e) => {
             break;
     }
     removeKeyboard();
-    render(keys);
+    view.render(keys);
     setResult('');
     addListenersToButtons();
 });

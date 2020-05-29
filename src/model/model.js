@@ -40,7 +40,7 @@ export class Calculator {
             if (this.isConvertible(value)) {
                 return this.convertOperation(value);
             }
-            this. state.keysArr.push(value);
+            this.state.keysArr.push(value);
             return this.getExpression();
         }
     }
@@ -65,21 +65,18 @@ export class Calculator {
             return this.getExpression();
         } else if (value === 'mc') {
             return this.setMemory(0);
-        } else if (value === 'm+') {
-            if (this.state.counted) {
-                return this.setMemory(this.state.memory + parseFloat(this.state.expression));
-            }
-        } else if (value === 'm-') {
-            if (this.state.counted) {
-                return this.setMemory(this.state.memory - parseFloat(this.state.expression));
-            }
+        } else if (value === 'm+' && this.state.counted) {
+            return this.setMemory(this.state.memory + parseFloat(this.state.expression));
+
+        } else if (value === 'm-' && this.state.counted) {
+            return this.setMemory(this.state.memory - parseFloat(this.state.expression));
         }
     }
 
      transformToRPN(input) {
         let oper = [];
         let inputArr = input.split(' ');
-        return inputArr
+        return  inputArr
             .reduce((output, token, index) => {
                 if (!isNaN(parseInt(token))) {
                     output += token + ' ';
@@ -113,11 +110,11 @@ export class Calculator {
     }
 
      validate() {
-        let expresion = this.state.keysArr;
-        if (expresion[0] === '-') {
+        let expression = this.state.keysArr;
+        if (expression[0] === '-') {
             this.state.keysArr.unshift(0);
         }
-        let outPut = expresion.reduce((result, current) => {
+        let outPut = expression.reduce((result, current) => {
             if (this.isOperator(current)) {
                 return result.toString() + ' ' + current.toString() + ' ';
             } else {
@@ -131,6 +128,7 @@ export class Calculator {
         if (outPut[outPut.length - 1] === ' ') {
             outPut = outPut.slice(0, -1);
         }
+
         return outPut.replace('  ', ' ');
     }
 
@@ -163,7 +161,7 @@ export class Calculator {
             default:
                 break;
         }
-        return getExpression();
+        return this.getExpression();
     }
 
      getPriority(value) {
@@ -179,7 +177,7 @@ export class Calculator {
     }
 
      clearLastValue() {
-        if (this.state.counted === true) {
+         if (this.state.counted === true) {
             this.state.keysArr = [];
             this.state.counted = false;
         } else {
@@ -189,15 +187,15 @@ export class Calculator {
     }
 
      getExpression() {
-         this.setExpression(this.state.keysArr.join(''));
+         return this.setExpression(this.state.keysArr.join(''));
     }
 
      setExpression(value) {
-         this.state.expression = value;
+         return this.state.expression = value;
     }
 
      setMemory(value) {
-         this.state.memory = value;
+         return this.state.memory = value;
     }
 
     evaluate(postfix) {
@@ -264,7 +262,7 @@ export class Calculator {
             case 'root':
                 return parseFloat(Math.pow(a, 1 / b));
             default:
-                break;
+                return 'Error';
         }
     }
 
