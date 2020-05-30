@@ -44,6 +44,7 @@ export class Renderer {
             const row = rows[rowId];
             this.drawButton(row, keyConfig, key);
         })
+
     }
 
 }
