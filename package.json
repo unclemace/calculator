@@ -22,9 +22,17 @@
     "@babel/preset-env": "^7.9.5",
     "babel-jest": "^25.4.0",
     "babel-loader": "^8.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.20.2",
     "html-webpack-plugin": "^4.0.2",
     "jest": "^25.4.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "eslint-plugin-jest": "^23.13.2"
   }
 }
