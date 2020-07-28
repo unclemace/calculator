@@ -22,9 +22,13 @@ export default class Calculator {
     return this.state.expression;
   }
 
-  // TODO
   reset() {
-
+    this.state = {
+      expression: '',
+      keysArr: [],
+      memory: 0,
+      counted: false,
+    };
   }
 
   processKey(value) {
