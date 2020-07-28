@@ -2,46 +2,60 @@ import { keysBasic, keysEngineer, keysProgrammer } from './config';
 import Renderer from '../view/render';
 import Calculator from '../model/model';
 
+
+// declaraion : what keys should be used for mode
+const modeButtons = {
+  basic: keysBasic,
+  prog: keysProgrammer,
+  eng: keysEngineer,
+};
+const viewField = document.querySelector('.view-field');
+
+// Controller life cycle
+// - init()
+// - run()
+//   - user input -> change state -> render -> user input -> ...
+
+export const ModeController = {
+  keys: null,
+  activeMode: null,
+  calculator: null,
+
+  init() {
+    this.keys = keysBasic;
+    this.activeMode = 'basic';
+    this.calculator = new Calculator();
+  },
+
+  run() {
+    addListenersToButtons();
+    addListenersToKeyboard();
+
+    const menu = document.querySelector('.menu');
+    menu.addEventListener('click', this.onChangeModeClick.bind(this));
+  },
+
+  onChangeModeClick(e) {
+    removeKeyboard();
+    const mode = e.target.id;
+    this.changeMode(mode);
+    this.render();
+  },
+
+  changeMode(id) {
+    this.activeMode = id;
+    this.keys = modeButtons[id];
+  },
+
+  render() {
+    const view = new Renderer();
+    view.render(this.keys);
+  },
+};
+
 const calculator = new Calculator();
 
-// eslint-disable-next-line import/no-mutable-exports,import/prefer-default-export
-export let keys = keysBasic;
-const view = new Renderer();
-view.render(keys);
-
-const viewField = document.querySelector('.view-field');
-const menu = document.querySelector('.menu');
-viewField.classList.add('bas');
-
-addListenersToButtons();
-addListenersToKeyboard();
-
-menu.addEventListener('click', (e) => {
-  if (viewField.classList.length === 2) {
-    viewField.classList.remove(viewField.classList[viewField.classList.length - 1]);
-  }
-  const { id } = e.target;
-  switch (id) {
-    case 'basic':
-      keys = keysBasic;
-      viewField.classList.add('bas');
-      break;
-    case 'prog':
-      keys = keysProgrammer;
-      viewField.classList.add('prog');
-      break;
-    case 'eng':
-      keys = keysEngineer;
-      viewField.classList.add('eng');
-      break;
-    default:
-      break;
-  }
-  removeKeyboard();
-  view.render(keys);
-  setResult('');
-  addListenersToButtons();
-});
+export const keys = keysBasic;
 
 function removeKeyboard() {
   const basic = document.querySelector('.basic');

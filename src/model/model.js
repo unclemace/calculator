@@ -22,6 +22,11 @@ export default class Calculator {
     return this.state.expression;
   }
 
+  // TODO
+  reset() {
+
+  }
+
   processKey(value) {
     if (value === '=') {
       this.state.counted = true;
